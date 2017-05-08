@@ -1,4 +1,5 @@
-[
+var sample_data;
+sample_data = [
     {
         "name": "bid.request",
         "help": "How many request is this server recieved?",
@@ -1537,4 +1538,4 @@
             }
         ]
     }
-]
+];

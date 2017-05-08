@@ -5,6 +5,8 @@
     <title>ECharts</title>
     <!-- 引入 echarts.js -->
     <script src="echarts.min.js"></script>
+    <script src="taffydb-master/taffy-min.js" ></script>
+    <script src="counter_sample_json.js"></script>
 </head>
 <body>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
@@ -35,6 +37,16 @@
 
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
+
+        var metric = TAFFY(sample_data);
+        var filter = metric({name:"bid.request"}).limit(2);
+        filter.each(function (r) {
+            alert(r.name + r.help)
+        });
+        console.log(filter.get());
+
+        var selected = metric({type:4}).select("metric");
+        console.log(selected);
     </script>
 </body>
 </html>
