@@ -18,12 +18,7 @@ sample_data = [
             }
         ]
     },
-    {
-        "name": "bid.parsefailed",
-        "help": "",
-        "type": 0,
-        "metric": []
-    },
+
     {
         "name": "bid.response",
         "help": "How many response is this server return",
@@ -613,24 +608,6 @@ sample_data = [
         ]
     },
     {
-        "name": "bid.impfilter",
-        "help": "How many bid_request's imp was filted?",
-        "type": 0,
-        "metric": []
-    },
-    {
-        "name": "bid.impf_anti_dsp_pos_id",
-        "help": "",
-        "type": 0,
-        "metric": []
-    },
-    {
-        "name": "bid.impf_anti_domain",
-        "help": "",
-        "type": 0,
-        "metric": []
-    },
-    {
         "name": "bid.resfilter",
         "help": "",
         "type": 0,
@@ -698,12 +675,6 @@ sample_data = [
                 }
             }
         ]
-    },
-    {
-        "name": "bid.respf_valid",
-        "help": "",
-        "type": 0,
-        "metric": []
     },
     {
         "name": "bid.respf_low_price",
