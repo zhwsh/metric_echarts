@@ -137,7 +137,7 @@ jFunk.sub={
     propertyPound:"id",
     propertyDot:"class",
     find:function(sch,arr,chl) {
-        if(typeof sch!="number" && sch.length==0) { return obj; }
+        if(typeof sch!="number" && sch.length==0) { return arr; }
         var colspl=sch.split(":");
         var brkspl=colspl[0].split("[");
         var flt=colspl[1];//presumes single filter;
@@ -154,6 +154,8 @@ jFunk.sub={
         var rtn=[];
         for(var ai=0; ai<arr.length; ai++) {
             if(typeof arr[ai]!="object") { continue; }
+            console.log(sch);
+            console.log(arr[ai]);
             rtn=rtn.concat(this.find_sub(sch,arr[ai],prp,chl));
         }
         if(flt) {
@@ -169,8 +171,9 @@ jFunk.sub={
         }
     },
     find_sub:function(sch,obj,prp,chl) {
-        if(typeof obj!="object") { return []; }
+        if(typeof obj!="object" || obj == null) { return []; }
         var rtn=[];
+        console.log(sch)
         if(typeof sch=="number") {
             if(obj[sch]) { if(!prp || this.find_matchProperty(obj[sch],prp)) { rtn.push(obj[sch]); } }
         }
@@ -186,7 +189,9 @@ jFunk.sub={
         else if(sch!="*") {
             if(obj[sch]) { if(!prp || this.find_matchProperty(obj[sch],prp)) { rtn.push(obj[sch]); } }
         }
-        if(typeof obj=="object" && (!chl || (chl==1 && obj.sort)) && !obj.innerHTML) {
+        console.log(obj);
+        if(typeof obj=="object" &&  obj != null&& (!chl || (chl==1 && obj.sort)) && !obj.innerHTML) {
+            console.log(obj);
             for(pr in obj) { rtn=rtn.concat(jFunk.sub.find_sub(sch,obj[pr],prp,( chl ? 2 : null )));  }
         }
         return rtn;
