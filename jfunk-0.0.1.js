@@ -127,12 +127,12 @@ var jFunk=function(sch,obj) {
             else { return this.results[idx]; }
         }
     };
-}
+};
 jFunk.init=function(prm) {
     for(pi in prm) {
         jFunk.sub[pi]=prm[pi];
     }
-}
+};
 jFunk.sub={
     propertyPound:"id",
     propertyDot:"class",
@@ -154,8 +154,8 @@ jFunk.sub={
         var rtn=[];
         for(var ai=0; ai<arr.length; ai++) {
             if(typeof arr[ai]!="object") { continue; }
-            console.log(sch);
-            console.log(arr[ai]);
+            //console.log(sch);
+            //console.log(arr[ai]);
             rtn=rtn.concat(this.find_sub(sch,arr[ai],prp,chl));
         }
         if(flt) {
@@ -173,7 +173,7 @@ jFunk.sub={
     find_sub:function(sch,obj,prp,chl) {
         if(typeof obj!="object" || obj == null) { return []; }
         var rtn=[];
-        console.log(sch)
+        //console.log(sch)
         if(typeof sch=="number") {
             if(obj[sch]) { if(!prp || this.find_matchProperty(obj[sch],prp)) { rtn.push(obj[sch]); } }
         }
@@ -189,15 +189,16 @@ jFunk.sub={
         else if(sch!="*") {
             if(obj[sch]) { if(!prp || this.find_matchProperty(obj[sch],prp)) { rtn.push(obj[sch]); } }
         }
-        console.log(obj);
+        //console.log(obj);
         if(typeof obj=="object" &&  obj != null&& (!chl || (chl==1 && obj.sort)) && !obj.innerHTML) {
-            console.log(obj);
+            //console.log(obj);
             for(pr in obj) { rtn=rtn.concat(jFunk.sub.find_sub(sch,obj[pr],prp,( chl ? 2 : null )));  }
         }
         return rtn;
     },
     find_matchProperty:function(obj,prp) {
         if(!prp) { return true; }
+        if (obj == null) {return false}
         for(var pi=0; pi<prp.length; pi++) {
             if(prp[pi].length==1 && typeof obj[prp[pi][0]]=="undefined") { return false; }
             if(prp[pi].length==2 && prp[pi][1]!=obj[prp[pi][0]]) { return false; }
@@ -215,7 +216,7 @@ jFunk.sub={
         }
         return arr;
     }
-}
+};
 
 
 var jF=jFunk;

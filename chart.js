@@ -1,8 +1,22 @@
 /**
  * Created by zhangwanshu on 2017/5/12.
  */
+
+//js 轻量级内存数据库 lokijs  https://github.com/techfort/LokiJS/wiki/Query-Examples
     // 基于准备好的dom，初始化echarts实例
 var myChart = echarts.init(document.getElementById('main'));
+
+var jfquery = jF("*[name=bid.gateway_time]",sample_data).get(0);
+var name = jfquery["name"];
+var metric = jfquery["metric"];
+
+var bucket = jF("> metric :first > histogram > bucket > upper_bound",jfquery).get();
+var values = jF("> metric :first > histogram > bucket > cumulative_count",jfquery).get();
+
+var histogram_names = jF("*[type=4] > name",sample_data).get();
+console.log(histogram_names);
+console.log(jF("*[name="+histogram_names[0]+"] > metric > histogram > bucket",sample_data).get());
+console.log(jF("*[name="+histogram_names[0]+"] > metric > label",sample_data).get());
 
 // 指定图表的配置项和数据
 var option = {
@@ -11,16 +25,16 @@ var option = {
     },
     tooltip: {},
     legend: {
-        data: ['销量']
+        data: [name]
     },
     xAxis: {
-        data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
+        data: bucket
     },
     yAxis: {},
     series: [{
-        name: '销量',
+        name: name,
         type: 'bar',
-        data: [5, 20, 36, 10, 10, 20]
+        data: values
     }]
 };
 
@@ -140,7 +154,7 @@ var sample = [
                         },
                         {
                             "cumulative_count": 0,
-                            "upper_bound": null
+                            "upper_bound": 1000
                         }
                     ]
                 }
@@ -234,7 +248,8 @@ var sample = [
     }
     ];
 //var query = jF("*[value=52]", sample);
-var query = jF("* [name=bid.gateway_time]", sample);
+var query = jF("*[name=bid.gateway_time]", sample);
 //var query = jF(" > metric > histogram > bucket > upper_bound", sample_data);
 var query_r = query.get();
 console.log(query_r);
+console.log(jF("*[name]",sample).get());
