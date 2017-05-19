@@ -3,43 +3,143 @@
  */
 
 //js 轻量级内存数据库 lokijs  https://github.com/techfort/LokiJS/wiki/Query-Examples
-    // 基于准备好的dom，初始化echarts实例
-var myChart = echarts.init(document.getElementById('main'));
+// 基于准备好的dom，初始化echarts实例
+function process(data, msg) {
+    var sample_data = data;
+    show_histogram(sample_data);
+    show_conter(sample_data);
+}
+get_data(process);
+//process(sample_data);
 
-var jfquery = jF("*[name=bid.gateway_time]",sample_data).get(0);
-var name = jfquery["name"];
-var metric = jfquery["metric"];
+function show_histogram(sample_data) {
+    var myChart = echarts.init(document.getElementById('main'));
 
-var bucket = jF("> metric :first > histogram > bucket > upper_bound",jfquery).get();
-var values = jF("> metric :first > histogram > bucket > cumulative_count",jfquery).get();
+    //var jfquery = jF("*[name=bid.gateway_time]", sample_data).get(0);
+    //var name = jfquery["name"];
+    //var metric = jfquery["metric"];
 
-var histogram_names = jF("*[type=4] > name",sample_data).get();
-console.log(histogram_names);
-console.log(jF("*[name="+histogram_names[0]+"] > metric > histogram > bucket",sample_data).get());
-console.log(jF("*[name="+histogram_names[0]+"] > metric > label",sample_data).get());
+    var bucket = jF("*[type=4] > metric :first > histogram > bucket > upper_bound", sample_data).get();
+    //var values = jF("> metric :first > histogram > bucket > cumulative_count", jfquery).get();
+
+    var histogram_names = jF("*[type=4] > name", sample_data).get();
+    console.log(histogram_names);
+    var series = [];
+    for (var i = 0; i < histogram_names.length; i++) {
+        var buckets = jF("*[name=" + histogram_names[i] + "] > metric > histogram > bucket", sample_data).get();
+        console.log(buckets);
+        var sum_arr = histogram_sum(buckets);
+        var serie = {
+            name: histogram_names[i],
+            type: 'bar',
+            data: sum_arr
+        };
+        series.push(serie);
+    }
+
+    console.log(sum_arr);
+    console.log(jF("*[name=" + histogram_names[0] + "] > metric > label", sample_data).get());
 
 // 指定图表的配置项和数据
-var option = {
-    title: {
-        text: 'ECharts 入门示例'
-    },
-    tooltip: {},
-    legend: {
-        data: [name]
-    },
-    xAxis: {
-        data: bucket
-    },
-    yAxis: {},
-    series: [{
-        name: name,
-        type: 'bar',
-        data: values
-    }]
-};
+    var option = {
+        title: {
+            text: 'gateway耗时(ms)',
+            top: 'top'
+        },
+        tooltip: {},
+        toolbox: {
+            feature: {
+                dataView: {readOnly: true}
+            }
+        },
+        legend: {
+            orient: 'vertical',
+            data: histogram_names
+        },
+        xAxis: {
+            data: bucket
+        },
+        yAxis: {},
+        series: series
+    };
 
 // 使用刚指定的配置项和数据显示图表。
-myChart.setOption(option);
+    myChart.setOption(option);
+}
+
+function show_conter(sample_data) {
+    var counter_names = jF("*[type=0] > name",sample_data).get();
+    console.log(counter_names);
+    var data = [];
+    for(var i=0;i < counter_names.length ;i++){
+        var name = counter_names[i];
+        if (name != "abtest" && name != "bid_other"){
+            var counter_values = jF("*[name=" + counter_names[i] + "] > metric > counter > value",sample_data).get();
+            console.log("counter",name,counter_values);
+            var sum = counter_values.reduce(
+                function (a,b) {
+               return a + b;
+            },0);
+            data.push({
+                name : name,
+                value : sum
+                });
+        }
+    }
+
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('loudou'));
+    var option = {
+        title: {
+            text: '漏斗图',
+            subtext: '纯属虚构'
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b} : {c}"
+        },
+        toolbox: {
+            feature: {
+                dataView: {readOnly: false},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        legend: {
+            data: counter_names
+        },
+        series: [
+            {
+                name: '预期',
+                type: 'funnel',
+                left: '10%',
+                width: '80%',
+                label: {
+                    normal: {
+                        formatter: '{b}预期'
+                    },
+                    emphasis: {
+                        position: 'inside',
+                        formatter: '{b}预期: {c}%'
+                    }
+                },
+                labelLine: {
+                    normal: {
+                        show: false
+                    }
+                },
+                itemStyle: {
+                    normal: {
+                        opacity: 0.7
+                    }
+                },
+                data: data
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+}
 
 /*
  var metric = TAFFY(sample_data);
@@ -246,10 +346,10 @@ var sample = [
             }
         ]
     }
-    ];
+];
 //var query = jF("*[value=52]", sample);
 var query = jF("*[name=bid.gateway_time]", sample);
 //var query = jF(" > metric > histogram > bucket > upper_bound", sample_data);
 var query_r = query.get();
 console.log(query_r);
-console.log(jF("*[name]",sample).get());
+console.log(jF("*[name]", sample).get());
